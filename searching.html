@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>What's in the fridge</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="../css/searching.css" />
+    <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase-database.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet'>
+    <link href='https://fonts.googleapis.com/css?family=Kanit' rel='stylesheet'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="fridge">
+        <div id="box">
+            <img id="search" src="../pic/search-flat.png">
+            <p id="topic">FINDING MENU FROM INGREDIENTS</p>
+            <P id="test"></P>
+            <div id="border"></div>
+            <div id="wrap">
+                <div id="insertInt">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-4 col-xs-12 form-group">
+                                <div class="form-check-inline">
+                                    <label class="customradio">
+                                        <span class="radiotextsty" style="font-family: 'Kanit'">TH</span>
+                                        <input id="TH" type="radio" checked="checked" name="radio" onclick="phTH()">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                    <label class="customradio">
+                                        <span class="radiotextsty" style="font-family: 'Kanit'">EN</span>
+                                        <input id="EN" type="radio" name="radio" onclick="phEN()">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='wrap'>
+                        <div class="mat-div">
+                            <label for="ingrediant" class="mat-label">Ingredients Insert</label>
+                            <input type="text" class="mat-input" id="ingrediant">
+                        </div>
+                    </div>
+                    <div class="input-drop">
+                        <ul id="ip-drop-list"></ul>
+                    </div>
+                    <div class="dc-morph-btns">
+                        <div class="wrapper" onclick="checkRadio()">
+                            <span id="white-button"></span>
+                            <i class="icon-camera"></i>
+                            <span id="words">Search</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="showList"></div>
+            </div>
+        </div>
+        <script>
+            var config = {
+                apiKey: "AIzaSyDN18LOjkMWnoEG3I22BtfQZDh2rFNlYeo",
+                authDomain: "whatsinthefridge-a841a.firebaseapp.com",
+                databaseURL: "https://whatsinthefridge-a841a.firebaseio.com",
+                projectId: "whatsinthefridge-a841a",
+                storageBucket: "whatsinthefridge-a841a.appspot.com",
+                messagingSenderId: "185894536636"
+            };
+            firebase.initializeApp(config);
+
+            var showList = document.getElementById('showList');
+            var input_atb = [];
+            var ul = document.querySelector('ul');
+            var listInput;
+            var input = document.getElementById("ingrediant");
+            input.addEventListener("keyup", function (event) {
+                event.preventDefault();
+                if (event.keyCode === 13) {
+                    var myItem = input.value;
+                    listInput = document.createElement('li');
+                    var listText = document.createElement('span');
+
+                    listInput.appendChild(listText);
+                    listText.textContent = myItem;
+
+                    input_atb.push(myItem)
+                    ul.appendChild(listInput);
+
+                    input.value = '';
+                }
+            });
+
+            function phTH() {
+                for (var i = 0; i < input_atb.length; i++) {
+                    ul.remove(listInput);
+                }
+                input_atb = []
+            }
+            function phEN() {
+                for (var i = 0; i < input_atb.length; i++) {
+                    ul.remove(listInput);
+                }
+                input_atb = []
+            }
+
+            function checkRadio() {
+                if (document.getElementById('TH').checked) {
+                    searchTH();
+                };
+                if (document.getElementById('EN').checked) {
+                    searchEN();
+                };
+            }
+
+            function searchTH() {
+                if (showList.hasChildNodes()) {
+                    showList.removeChild(showList.childNodes[0]);
+                }
+
+                var ol = document.createElement('ol');
+                var q;
+                for (var i = 0; i < input_atb.length; i++) {
+                    if (input_atb.length == 1) {
+                        q = input_atb[0];
+                    } else if (input_atb.length > 1) {
+                        if (i == 0) {
+                            q = input_atb[0];
+                        } else {
+                            q += ',' + input_atb[i];
+                        }
+                    }
+                }
+
+                var qStr = q.split(",");
+                console.log(qStr);
+                var ref = firebase.database().ref("menulists")
+                var qStrCheck = "false";
+                ref.on('value', function (snapshot) {
+                    snapshot.forEach(function (childSnapshot) {
+                        var ingredients = childSnapshot.child("ingredients").val();
+                        var counter = 0;
+                        for (i = 0; i < qStr.length; i++) {
+                            if (ingredients.includes(qStr[i])) {
+                                counter++;
+                            }
+                            if (counter == qStr.length) {
+                                qStrCheck = "true";
+                            }
+                        }
+
+                        if (qStrCheck == "true") {
+                            var li = document.createElement('li');
+                            li.innerHTML = '<span id="menuTopic">' + childSnapshot.child("name").val() + '</span>' + '<br>' + '<br>' +
+                                "ประเภท : " + childSnapshot.child("type").val() + '<br>' +
+                                "วัตถุดิบ : " + childSnapshot.child("ingredients").val() + '<br>' + '<br>' +
+                                "ที่มา : " + '<a href="' + childSnapshot.child("url").val() + '">' + "Click" + '</a>' + '<br>' + '<br>'
+
+                            if (childSnapshot.child("img").val() === '(unknown') {
+                                li.innerHTML += '<img src="https://www.img.in.th/image/BCqTFi" width="50%" height="50%">' + '</img>' + "<br>" + "<br>" + "<hr>"
+                            } else {
+                                li.innerHTML += '<img src="' + childSnapshot.child("img").val() + '" width="50%" height="50%">' + '</img>' + "<br>" + "<br>" + "<hr>";
+                            }
+
+                            console.log(childSnapshot.child("img").val())
+
+                            ol.appendChild(li);
+                        }
+                        qStrCheck = "false";
+                    });
+                    showList.appendChild(ol);
+                });
+            }
+
+            function searchEN() {
+                var ol = document.createElement('ol');
+                var q;
+                for (var i = 0; i < input_atb.length; i++) {
+                    if (input_atb.length == 1) {
+                        q = input_atb[0];
+                    } else if (input_atb.length > 1) {
+                        if (i == 0) {
+                            q = input_atb[0];
+                        } else {
+                            q += '%20' + input_atb[i];
+                        }
+                    }
+                }
+
+                var app_id = "d150e30d";
+                var app_key = "a68ede718a24fe12015490ffb5bae1fa";
+                var requestURL = "https://api.edamam.com/search?q=" + q + "&app_id=" + app_id + "&app_key=" + app_key + "&from=0&to=10";
+                var request = new XMLHttpRequest();
+                if (showList.hasChildNodes()) {
+                    showList.removeChild(showList.childNodes[0]);
+                }
+
+                request.open('GET', requestURL);
+                request.send();
+                request.responseType = 'json';
+                request.onload = function () {
+                    var superActivities = request.response;
+                    showActivities(superActivities);
+                }
+
+                function showActivities(jsonObj) {
+                    var hits = jsonObj['hits'];
+
+                    for (var i = 0; i < hits.length; i++) {
+
+                        var li = document.createElement('li');
+                        li.innerHTML =
+                            '<span id="menuTopic">' + hits[i].recipe.label + '</span>'
+                            + '<br>' + '<br>'
+                            + '<strong>Ingredients: </strong>' + '<br>'
+                        for (var j = 0; j < hits[i].recipe.ingredients.length; j++) {
+                            li.innerHTML += hits[i].recipe.ingredients[j].text + '<br>'
+                        }
+                        li.innerHTML += '<br>' + '<strong>Directions: </strong>' + '<a href="' + hits[i].recipe.url + '" target="_blank">' + hits[i].recipe.label + '</a>' + '<br>'
+                        li.innerHTML += '<br>' + '<img src="' + hits[i].recipe.image + '" width="50%" height="50%">' + '</img>'
+                            + "<br>" + "<br>" + "<hr>";
+                        ol.appendChild(li);
+                    }
+
+                    showList.appendChild(ol);
+                }
+            }
+
+            $(".mat-input").focus(function () {
+                $(this).parent().addClass("is-active is-completed");
+            });
+
+            $(".mat-input").focusout(function () {
+                if ($(this).val() === "")
+                    $(this).parent().removeClass("is-completed");
+                $(this).parent().removeClass("is-active");
+            })
+
+            $(document).ready(function () {
+                $('.dc-morph-btns li').on('click', function () {
+                    $('.dc-morph-btns li').removeClass("selected");
+                    $(this).toggleClass("selected");
+                });
+
+            });
+
+        </script>
+</body>
+
+</html>
