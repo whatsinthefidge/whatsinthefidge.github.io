@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>What's in the fridge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="../css/menulist.css" />
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+</head>
+
+<body>
+    <div id="fridge">
+        <div id="box">
+            <img id="menu" src="../pic/food-menu-icon.png">
+            <p id="topic">MENU LIST</p>
+            <div id="border"></div>
+            <div id="showMenu" class="row view-group">
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        var showMenu = document.getElementById('showMenu');
+        var from = Math.floor((Math.random() * 100) + 1);
+        var to = from + 21;
+        var app_id = "d150e30d";
+        var app_key = "a68ede718a24fe12015490ffb5bae1fa";
+        var requestURL = "https://api.edamam.com/search?q=undefined&app_id=" + app_id + "&app_key=" + app_key + "&from=" + from + "&to=" + to;
+        var request = new XMLHttpRequest();
+        var ol = document.createElement('ol');
+
+        if (showMenu.hasChildNodes()) {
+            showMenu.removeChild(showMenu.childNodes[0]);
+        }
+
+        request.open('GET', requestURL);
+        request.send();
+        request.responseType = 'json';
+        request.onload = function () {
+            var superActivities = request.response;
+            showActivities(superActivities);
+        }
+
+        function showActivities(jsonObj) {
+            var hits = jsonObj['hits'];
+
+            for (var i = 0; i < hits.length; i++) {
+
+                if (hits[i].recipe.label !== 'undefined') {
+
+                    var img = document.createElement('img');
+                    img.setAttribute("class", "group list-group-image img-fluid");
+                    img.setAttribute("src", hits[i].recipe.image);
+                    img.setAttribute("style", "display: block, margin: auto, left: 0, right: 0");
+                    img.setAttribute("id", "imgCard");
+
+                    var h4 = document.createElement('h4');
+                    h4.setAttribute("class", "group card-title inner list-group-item-heading");
+                    h4.textContent = hits[i].recipe.label;
+
+                    var a = document.createElement('a');
+                    a.textContent = "Cooking";
+                    a.setAttribute("class", "btn btn-success");
+                    a.setAttribute("href", hits[i].recipe.url);
+                    a.setAttribute("target", "_blank");
+
+                    var inner_grid = document.createElement('div');
+                    inner_grid.setAttribute("class", "col-xs-12 col-md-6");
+                    inner_grid.append(a);
+
+                    var row = document.createElement('div');
+                    row.setAttribute("class", "row");
+                    row.append(inner_grid);
+
+                    var cardBody = document.createElement('div');
+                    cardBody.setAttribute("class", "caption card-body");
+                    cardBody.append(h4);
+                    cardBody.append(row);
+
+                    var imgEvent = document.createElement('div');
+                    imgEvent.setAttribute("class", "img-event");
+                    imgEvent.append(img);
+
+                    var thumbCard = document.createElement('div');
+                    thumbCard.setAttribute("class", "thumbnail card");
+                    thumbCard.append(imgEvent);
+                    thumbCard.append(cardBody);
+
+                    var item_grid = document.createElement('div');
+                    item_grid.setAttribute("class", "item col-xs-4 col-lg-4");
+                    item_grid.append(thumbCard);
+
+                    showMenu.append(item_grid);
+
+                }
+            }
+
+        }
+
+    </script>
+</body>
+
+</html>

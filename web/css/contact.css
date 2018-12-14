@@ -1,0 +1,67 @@
+body {
+    height: 100%;
+    margin: 0;
+}
+  
+#col1 {
+    position: fixed;
+    width: 30%;
+    float: left;
+    min-height: 100%;
+    background-color: #c5c5cf;
+    z-index: 0;
+}
+
+#col2 {
+  position: fixed;
+  left: 30%;
+  width: 70%;
+  float: right;
+  min-height: 100%;
+  background-color: #d7d7d7;
+  z-index: -1;
+}
+
+#topic {
+    text-align: left;
+    font-family: 'Arvil';
+    font-size: 370%;
+    margin: auto;
+    margin-top: 4%;
+    margin-left: 15%;
+    margin-bottom: 0;
+}
+  
+@font-face {
+    font-family: Arvil;
+    src: url(../css/Arvil.ttf);
+}
+
+#box {
+    background-color: #ffdd00;
+    width: 33%;
+    height: 8%;
+    top: 5%;
+    left: 28%;
+    z-index: -1;
+    position: absolute;
+}
+
+#contact {
+    text-align: left;
+    font-family: 'Arvil';
+    font-size: 550%;
+    margin: auto;
+    margin-top: 2%;
+    margin-left: 5%;
+    margin-bottom: 0;
+    text-decoration: underline;
+    text-decoration-color: #ffdd00;
+}
+
+#map {
+    width: 700px;
+    height: 500px;
+    margin-top: 3%;
+    left: 5%;
+}
