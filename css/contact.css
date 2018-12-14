@@ -81,16 +81,6 @@ body {
     src: url(../css/Arvil.ttf);
 }
 
-#box {
-    background-color: #ffdd00;
-    width: 33%;
-    height: 8%;
-    top: 5%;
-    left: 28%;
-    z-index: -1;
-    position: absolute;
-}
-
 #contact {
     text-align: left;
     font-family: 'Arvil';
