@@ -1,0 +1,163 @@
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>What's in the fridge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Oleo+Script:400,700" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Teko:400,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous">
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet'>
+  <link href='https://fonts.googleapis.com/css?family=Kanit' rel='stylesheet'>
+  <link rel="stylesheet" type="text/css" media="screen" href="update.css" />
+  <script src="jquery-3.3.1.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.7.0/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyDN18LOjkMWnoEG3I22BtfQZDh2rFNlYeo",
+      authDomain: "whatsinthefridge-a841a.firebaseapp.com",
+      databaseURL: "https://whatsinthefridge-a841a.firebaseio.com",
+      projectId: "whatsinthefridge-a841a",
+      storageBucket: "whatsinthefridge-a841a.appspot.com",
+      messagingSenderId: "185894536636"
+    };
+    firebase.initializeApp(config);
+  </script>
+
+  <script type="text/javascript">
+    var count;
+    // jQuery convention for running when the document has been fully loaded:
+    $(document).ready(() => {
+      const database = firebase.database();
+
+      // use .on('value' to get notified in real-time whenever anyone
+      // on the internet updates your database. cool!
+      database.ref('menulists/').on('value', (snapshot) => {
+        const allUsers = snapshot.val();
+        count = snapshot.numChildren();
+
+        console.log('menulists/ changed:', allUsers);
+        if (allUsers) {
+          $('#status').html(''); // clear the HTML
+          $('#status').append('List of menus:');
+          Object.keys(allUsers).forEach((key) => {
+            $('#status').append('<li>' + key + ' ' + allUsers[key].name + ' ' + allUsers[key].ingredients + ' ' + allUsers[key].type + '</li>');
+          });
+        }
+      });
+
+      $('#readButton').click(() => {
+        const key = 'menulists/' + $('#nameBox').val();
+
+        // 'once' reads the value once from the database
+        database.ref(key).once('value', (snapshot) => {
+          const data = snapshot.val();
+
+          console.log('You received some data!', data);
+          if (!data) {
+            // clear the display
+            $('#jobDiv').html('');
+            $('#petImage').attr('src', '').attr('width', '0px');
+            $('#status').html('Error: could not find user: ' + key);
+            return;
+          }
+
+          if (data.job && data.pet) {
+            $('#jobDiv').html('My job is ' + data.job);
+            $('#petImage').attr('src', data.pet).attr('width', '300px');
+          } else {
+            // clear the display
+            $('#jobDiv').html('');
+            $('#petImage').attr('src', '').attr('width', '0px');
+          }
+        });
+      });
+
+      $('#allUsersButton').click(() => {
+        database.ref('menulists/').once('value', (snapshot) => {
+          const data = snapshot.val();
+          console.log('You received some data!', data);
+          $('#status').html('All users: ' + Object.keys(data));
+        });
+      });
+
+      $('#insertButton').click(() => {
+        const key = $('#insertKeyBox').val();
+        database.ref('menulists/' + "list" + count).set({
+          name: $('#insertNameBox').val(),
+          ingredients: $('#insertIngdBox').val(),
+          type: $('#insertTypeBox').val(),
+          img: $('#insertImgBox').val(),
+          how: $('#insertUrlBox').val(),
+          penname: $('#insertWBox').val()
+        });
+      });
+
+
+    });
+  </script>
+
+</head>
+
+<body>
+  <div id="fridge">
+    <div id="box">
+      <img id="icon" src="writer.png">
+      <p id="topic">COOKING YOUR OWN FOOD</p>
+      <div id="border"></div>
+      <div id="cookingForm" class="contact-form">
+        <form>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="insertNameBox">ชื่อเมนู*</label>
+                <br>
+                <input type="text" id="insertNameBox" name="txtName" class="form-control" value="" required />
+              </div>
+              <div class="form-group">
+                <label for="insertTypeBox">ประเภทของอาหาร</label>
+                <br>
+                <input type="text" id="insertTypeBox" name="txtType" class="form-control" value="" />
+              </div>
+              <div class="form-group">
+                <label for="insertImgBox">URL รูปภาพ</label>
+                <br>
+                <input type="text" id="insertImgBox" name="txtImg" class="form-control" value="" />
+              </div>
+              <div class="form-group">
+                <label for="insertWBox">นามปากกา*</label>
+                <br>
+                <input type="text" id="insertWBox" name="txtPenName" class="form-control" value="" required />
+              </div>
+
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="insertIngdBox">วัตถุดิบ*</label>
+                <br>
+                <textarea type="text" id="insertIngdBox" name="insertIngdBox" class="form-control intg-control" value="" style="width: 100%; height: 100px;"
+                  required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="insertUrlBox">วิธีทำอาหาร*</label>
+                <textarea name="txtMsg" id="insertUrlBox" class="form-control" style="width: 100%; height: 150px;" required></textarea>
+              </div>
+              <div class="form-group">
+                <button id="insertButton" class="btnContact">Send</button>
+              </div>
+
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+</body>
+
+</html>
