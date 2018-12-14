@@ -57,7 +57,7 @@ body {
 
 @font-face {
   font-family: 'Arvil';
-  src: url(C:\Users\User\Documents\GitHub\whatsinthefidge.github.io\css\Arvil.ttf);
+  src: url(../css/Arvil.ttf);
 }
 
 #box {
