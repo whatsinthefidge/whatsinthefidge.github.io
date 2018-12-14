@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>What's in the fridge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Kanit' rel='stylesheet'>
+    <link rel="stylesheet" type="text/css" media="screen" href="../css/contact.css" />
+</head>
+
+<body>
+    <div id="col1">
+        <p id="topic">MY FRIDGE'S TEAM</p>
+        <div id="box"></div>
+         <div>
+        <div class="container">
+            <img src="../pic/paw.png" alt="Avatar" class="image">
+            <div class="overlay">
+                <div class="text">น.ส.อริสรา ผ่องใส<br /> 593040454-2 </div>
+            </div>
+        </div>
+        <div class="container">
+            <img src="../pic/yok.png" alt="Avatar" class="image">
+            <div class="overlay">
+                <div class="text">นายณัฐพรรษ ภูมิพันธ์<br /> 593040662-5</div>
+            </div>
+        </div>
+        <div class="container">
+            <img src="../pic/bam.png" alt="Avatar" class="image">
+            <div class="overlay">
+                <div class="text">น.ส.นภัสสินี ขัดสีใส<br />  593040426-7</div>
+            </div>
+        </div>
+        </div>
+    </div>
+    <div id="col2">
+        <p id="contact">CONTACT US</p>
+        <div id="map"></div>
+    </div>
+
+    <script>
+        var map;
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 16.472408, lng: 102.825673 },
+                zoom: 20
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAXWy9XbjO5L6P4oyuXhUD9V17x9l2I8iw&callback=initMap" async
+        defer></script>
+</body>
+
+</html>
